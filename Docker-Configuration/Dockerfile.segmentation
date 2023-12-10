@@ -1,0 +1,48 @@
+# Use an official Python runtime as a parent image
+FROM python:3.9
+
+# Add your application files to the image
+# COPY . /app
+WORKDIR /app
+
+
+RUN apt-get update
+# Install the SQL Server ODBC Driver
+# RUN apt-get update && \
+#     apt-get install -y \
+#     unixodbc \
+#     unixodbc-dev \
+#     && rm -rf /var/lib/apt/lists/*
+
+# RUN apt-get install curl
+RUN apt-get install apt-transport-https
+RUN curl https://packages.microsoft.com/keys/microsoft.asc | apt-key add -
+RUN curl https://packages.microsoft.com/config/ubuntu/20.04/prod.list | tee /etc/apt/sources.list.d/msprod.list
+
+RUN apt-get update
+ENV ACCEPT_EULA=y DEBIAN_FRONTEND=noninteractive
+RUN apt-get install mssql-tools unixodbc-dev -y
+
+
+
+COPY requirements.txt .
+
+
+# RUN apt-get install -y g++ unixodbc-dev
+RUN pip install -r requirements.txt
+
+
+# Copy the local script to the container at /app
+ADD Segmentation.py /app/Segmentation.py
+
+
+RUN pip install pyodbc
+RUN pip install lifetimes
+
+
+# # Set environment variables if needed
+# ENV ODBCINI=/etc/odbc.ini
+# ENV ODBCSYSINI=/etc
+
+# Run the Segmentation script when the container launches
+CMD ["python", "Segmentation.py"]
