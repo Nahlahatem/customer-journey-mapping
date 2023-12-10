@@ -1,0 +1,8 @@
+confluent-kafka
+kafka-python
+pandas
+numpy
+pyspark
+requests
+pyodbc
+lifetimes
